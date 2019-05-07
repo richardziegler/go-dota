@@ -11,14 +11,18 @@ import (
 	"strings"
 )
 
+type R struct {
+	SteamAPIResult SteamAPIResult `json:"response"`
+}
+
 type SteamAPIResult struct {
-	SteamID int `json:"steamid"`
-	Success int `json:"success"`
+	SteamID string `json:"steamid"`
+	Success int    `json:"success"`
 }
 
 func main() {
 
-	steamAPIKey := "APIKeyHere"
+	SteamAPIKey := "APIKeyHere"
 	// var openDotaAPIKey string = ""
 
 	fmt.Println("   ___  ____  _________     ___  ___  ____  __________   ____\n" +
@@ -30,7 +34,7 @@ func main() {
 	myUsername := getUserName()
 
 	fmt.Println("I love Dota and my username is " + myUsername + "!")
-	fmt.Println(getSteamID(steamAPIKey, myUsername))
+	getSteamID(SteamAPIKey, myUsername)
 
 }
 
@@ -42,10 +46,11 @@ func getUserName() string {
 	return trimmedUsername
 }
 
-func getSteamID(steamAPIKey string, username string) int {
-	steamAPIUrl := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s", steamAPIKey, username)
+func getSteamID(SteamAPIKey string, username string) string {
+	steamAPIUrl := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s", SteamAPIKey, username)
+	var testString string = steamAPIUrl
 
-	steamResponse, err := http.Get(steamAPIUrl)
+	steamResponse, err := http.Get(testString)
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -56,13 +61,13 @@ func getSteamID(steamAPIKey string, username string) int {
 		log.Fatal(err)
 	}
 
-	var steamAPIResult SteamAPIResult
+	var steamAPIResult R
 
 	json.Unmarshal(responseData, &steamAPIResult)
 
-	fmt.Println("ID: " + string(steamAPIResult.SteamID))
+	fmt.Println("ID: " + string(steamAPIResult.SteamAPIResult.SteamID))
 
-	response := steamAPIResult.SteamID
+	response := steamAPIResult.SteamAPIResult.SteamID
 
 	return response
 }
