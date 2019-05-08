@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -46,11 +47,10 @@ func getUserName() string {
 	return trimmedUsername
 }
 
-func getSteamID(SteamAPIKey string, username string) string {
+func getSteamID(SteamAPIKey string, username string) int64 {
 	steamAPIUrl := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s", SteamAPIKey, username)
-	var testString string = steamAPIUrl
 
-	steamResponse, err := http.Get(testString)
+	steamResponse, err := http.Get(steamAPIUrl)
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -67,7 +67,14 @@ func getSteamID(SteamAPIKey string, username string) string {
 
 	fmt.Println("ID: " + string(steamAPIResult.SteamAPIResult.SteamID))
 
-	response := steamAPIResult.SteamAPIResult.SteamID
+	uID64 := steamAPIResult.SteamAPIResult.SteamID
+	steamID64, err := strconv.ParseInt(uID64[3:len(uID64)], 0, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	return response
+	sID := steamID64 - 61197960265728
+
+	fmt.Println(sID)
+	return sID
 }
