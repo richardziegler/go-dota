@@ -21,9 +21,7 @@ type APIResult struct {
 	Success int    `json:"success"`
 }
 
-var steamAPIKey = "APIKeyHere"
-
-func getSteamID(SteamAPIKey string, username string) int64 {
+func GetSteamID(steamAPIKey string, username string) int64 {
 	steamAPIUrl := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s", steamAPIKey, username)
 
 	steamResponse, err := http.Get(steamAPIUrl)
@@ -39,7 +37,7 @@ func getSteamID(SteamAPIKey string, username string) int64 {
 
 	var steamAPIData R
 
-	json.Unmarshal(responseData, &steamAPIResult)
+	json.Unmarshal(responseData, &steamAPIData)
 
 	fmt.Println("ID: " + string(steamAPIData.APIResult.SteamID))
 

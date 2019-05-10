@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
+	
 	"github.com/richardziegler/go-dota/steam"
 )
 
 func main() {
 
+	var steamAPIKey = "APIKeyHere"
 	// var openDotaAPIKey string = ""
 
 	fmt.Println("   ___  ____  _________     ___  ___  ____  __________   ____\n" +
@@ -22,7 +23,7 @@ func main() {
 	myUsername := getUserName()
 
 	fmt.Println("I love Dota and my username is " + myUsername + "!")
-	steam.getSteamID(SteamAPIKey, myUsername)
+	steam.GetSteamID(steamAPIKey, myUsername)
 
 }
 
