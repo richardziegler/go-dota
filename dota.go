@@ -4,15 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
-	
+
+	"github.com/richardziegler/go-dota/opendota"
 	"github.com/richardziegler/go-dota/steam"
 )
 
 func main() {
 
-	var steamAPIKey = "APIKeyHere"
-	// var openDotaAPIKey string = ""
+	var steamAPIKey = "xxx"
+	var openDotaAPIKey = "xxx"
 
 	fmt.Println("   ___  ____  _________     ___  ___  ____  __________   ____\n" +
 		"  / _ \\/ __ \\/_  __/ _ |   / _ \\/ _ \\/ __ \\/ __/  _/ /  / __/\n" +
@@ -22,8 +24,17 @@ func main() {
 
 	myUsername := getUserName()
 
-	fmt.Println("I love Dota and my username is " + myUsername + "!")
-	steam.GetSteamID(steamAPIKey, myUsername)
+	sID := strconv.FormatInt(steam.GetSteamID(steamAPIKey, myUsername), 10)
+	wins, losses, winR := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
+	displayName := opendota.GetPlayerProfileName(sID, openDotaAPIKey)
+
+
+	fmt.Println("=====================================================================================")
+	fmt.Printf("Your username: %s\n", displayName)
+	fmt.Printf("You have won %v games and lost %v games\n", wins, losses)
+	fmt.Printf("Your win rate is %v%%\n", winR)
+	fmt.Println("=====================================================================================")
+
 
 }
 

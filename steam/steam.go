@@ -36,19 +36,15 @@ func GetSteamID(steamAPIKey string, username string) int64 {
 	}
 
 	var steamAPIData R
-
 	json.Unmarshal(responseData, &steamAPIData)
-
-	fmt.Println("ID: " + string(steamAPIData.APIResult.SteamID))
 
 	uID64 := steamAPIData.APIResult.SteamID
 	steamID64, err := strconv.ParseInt(uID64[3:len(uID64)], 0, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	// Magic Number to get Steam32 ID
 	sID := steamID64 - 61197960265728
 
-	fmt.Println(sID)
 	return sID
 }
