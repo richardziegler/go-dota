@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +17,8 @@ func main() {
 
 	var steamAPIKey = "xxx"
 	var openDotaAPIKey = "xxx"
+
+	handleRequests()
 
 	fmt.Println("   ___  ____  _________     ___  ___  ____  __________   ____\n" +
 		"  / _ \\/ __ \\/_  __/ _ |   / _ \\/ _ \\/ __ \\/ __/  _/ /  / __/\n" +
@@ -44,4 +48,20 @@ func getUserName() string {
 	username, _ := reader.ReadString('\n')
 	trimmedUsername := strings.TrimSuffix(username, "\n")
 	return trimmedUsername
+}
+
+func homePage(w http.ResponseWriter, r *http.Request) {
+	var steamAPIKey = "xxx"
+	var openDotaAPIKey = "xxx"
+	var myUsername = "Nablith"
+
+	sID := strconv.FormatInt(steam.GetSteamID(steamAPIKey, myUsername), 10)
+	wins, losses, _ := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
+	fmt.Fprintf(w, "You have won %v games and lost %v games\n", wins, losses)
+	fmt.Println("Endpoint Hit: Homepage")
+}
+
+func handleRequests() {
+	http.HandleFunc("/", homePage)
+	log.Fatal(http.ListenAndServe(":1010", nil))
 }
