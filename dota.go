@@ -28,13 +28,11 @@ func main() {
 	wins, losses, winR := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
 	displayName := opendota.GetPlayerProfileName(sID, openDotaAPIKey)
 
-
 	fmt.Println("=====================================================================================")
 	fmt.Printf("Your username: %s\n", displayName)
 	fmt.Printf("You have won %v games and lost %v games\n", wins, losses)
 	fmt.Printf("Your win rate is %v%%\n", winR)
 	fmt.Println("=====================================================================================")
-
 
 }
 
