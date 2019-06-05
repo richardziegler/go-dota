@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,36 +10,28 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/richardziegler/go-dota/opendota"
 	"github.com/richardziegler/go-dota/steam"
 )
 
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Println("Endpoint Hit: homePage")
+}
+
+var steamAPIKey = "xxx"
+var openDotaAPIKey = "xxx"
+
 func main() {
 
-	var steamAPIKey = "xxx"
-	var openDotaAPIKey = "xxx"
-
 	handleRequests()
-
-	fmt.Println("   ___  ____  _________     ___  ___  ____  __________   ____\n" +
-		"  / _ \\/ __ \\/_  __/ _ |   / _ \\/ _ \\/ __ \\/ __/  _/ /  / __/\n" +
-		" / // / /_/ / / / / __ |  / ___/ , _/ /_/ / _/_/ // /__/ _/  \n" +
-		"/____/\\____/ /_/ /_/ |_| /_/  /_/|_|\\____/_/ /___/____/___/  \n" +
-		"                                                             ")
 
 	myUsername := getUserName()
 
 	sID := strconv.FormatInt(steam.GetSteamID(steamAPIKey, myUsername), 10)
-	wins, losses, winR := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
 	displayName := opendota.GetPlayerProfileName(sID, openDotaAPIKey)
-
-
-	fmt.Println("=====================================================================================")
 	fmt.Printf("Your username: %s\n", displayName)
-	fmt.Printf("You have won %v games and lost %v games\n", wins, losses)
-	fmt.Printf("Your win rate is %v%%\n", winR)
-	fmt.Println("=====================================================================================")
-
 
 }
 
@@ -50,18 +43,16 @@ func getUserName() string {
 	return trimmedUsername
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	var steamAPIKey = "xxx"
-	var openDotaAPIKey = "xxx"
-	var myUsername = "Nablith"
-
-	sID := strconv.FormatInt(steam.GetSteamID(steamAPIKey, myUsername), 10)
-	wins, losses, _ := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
-	fmt.Fprintf(w, "You have won %v games and lost %v games\n", wins, losses)
-	fmt.Println("Endpoint Hit: Homepage")
+func getWinsLosses(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["id"]
+	sID := strconv.FormatInt(steam.GetSteamID(steamAPIKey, username), 10)
+	win, loss, average := opendota.GetWinsAndLosses(sID, openDotaAPIKey)
+	json.NewEncoder(w).Encode(opendota.WinsLosses{win, loss, average})
 }
 
 func handleRequests() {
-	http.HandleFunc("/", homePage)
-	log.Fatal(http.ListenAndServe(":1010", nil))
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/getWinsLosses/{id}", getWinsLosses)
+	log.Fatal(http.ListenAndServe(":1010", myRouter))
 }

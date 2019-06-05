@@ -13,14 +13,15 @@ import (
 type WinsLosses struct {
 	Win int `json:"win"`
 	Lose int `json:"lose"`
+	Average int `json:"average"`
 }
 
 type OdProfile struct {
-	OdPData OdPData `json:"profile""`
+	OdPData OdPData `json:"profile"`
 }
 
 type OdPData struct {
-	PersonaName string `json:"personaname""`
+	PersonaName string `json:"personaname"`
 }
 
 func GetWinsAndLosses(steamID string, openDotaKey string) (int, int, int) {
