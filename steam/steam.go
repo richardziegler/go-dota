@@ -1,13 +1,11 @@
 package steam
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"os"
 	"strconv"
+
+	"github.com/richardziegler/go-dota/rest"
 )
 
 // R ... top level response structure
@@ -24,19 +22,8 @@ type APIResult struct {
 func GetSteamID(steamAPIKey string, username string) int64 {
 	steamAPIUrl := fmt.Sprintf("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=%s&vanityurl=%s", steamAPIKey, username)
 
-	steamResponse, err := http.Get(steamAPIUrl)
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
-	}
-
-	responseData, err := ioutil.ReadAll(steamResponse.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var steamAPIData R
-	json.Unmarshal(responseData, &steamAPIData)
+	rest.Get(steamAPIUrl, steamAPIData)
 
 	uID64 := steamAPIData.APIResult.SteamID
 	steamID64, err := strconv.ParseInt(uID64[3:len(uID64)], 0, 64)
